@@ -1,11 +1,14 @@
 package hexlet.code;
 
+
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
+
 import java.nio.file.Path;
+
 
 @Command(
         name = "gendiff",
@@ -39,7 +42,12 @@ public class App implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("Logic for comparing files goes here...");
+        try {
+            System.out.println(FileReader.getObjectMapper(String.valueOf(filePath1)));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     public static void main(String[] args) {
