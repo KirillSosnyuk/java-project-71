@@ -18,21 +18,22 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x ./gradlew
-
       - name: Run Build
+        working-directory: ./app
         run: ./gradlew build
 
       - name: Run Checkstyle
+        working-directory: ./app
         run: ./gradlew checkstyleMain checkstyleTest
 
       - name: Run tests
+        working-directory: ./app
         run: ./gradlew test
 
       - name: SonarQube Scan
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        working-directory: ./app
         run: ./gradlew sonarqube \
           -Dsonar.projectKey=my_project_key \
           -Dsonar.host.url=https://sonarcloud.io
