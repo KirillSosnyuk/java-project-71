@@ -30,10 +30,19 @@ jobs:
         working-directory: ./app
         run: ./gradlew test
 
-      - name: SonarQube Scan
+      - name: Cache SonarQube packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: ${{ runner.os }}-gradle
+      - name: Build and analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        working-directory: ./app
-        run: ./gradlew sonarqube \
-          -Dsonar.projectKey=KirillSosnyuk_java-project-71 \
-          -Dsonar.host.url=https://sonarcloud.io
+        run: ./gradlew build sonar --info
