@@ -8,6 +8,9 @@ import picocli.CommandLine.Parameters;
 
 
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.Callable;
 
 
 @Command(
@@ -16,7 +19,7 @@ import java.nio.file.Path;
         version = "gendiff 1.0",
         description = "Compares two configuration files and shows a difference."
 )
-public class App implements Runnable {
+public class App implements Callable {
     @Parameters(
             index = "0",
             description = "path to first file",
@@ -41,13 +44,16 @@ public class App implements Runnable {
 
 
     @Override
-    public void run() {
+    public String call() {
         try {
-            System.out.println(FileReader.getObjectMapper(String.valueOf(filePath1)));
+            Map<String, Object> firstFile = FileReader.getData(String.valueOf(filePath1));
+            Map<String, Object> secondFile = FileReader.getData(String.valueOf(filePath2));
+            var test = Differ.generate(firstFile, secondFile);
+            System.out.println(test);
+            return test;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
     }
 
     public static void main(String[] args) {

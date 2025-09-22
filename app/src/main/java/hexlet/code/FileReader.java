@@ -2,6 +2,7 @@ package hexlet.code;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.yaml.snakeyaml.Yaml;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,8 +11,7 @@ import java.util.Map;
 
 public class FileReader {
     private static Path getFilePath(String filePath) {
-        return Paths.get(filePath)
-                .toAbsolutePath().normalize();
+        return Paths.get(filePath).toAbsolutePath().normalize();
     }
 
     private static String readFixture(String fileName) throws Exception {
@@ -19,8 +19,14 @@ public class FileReader {
         return Files.readString(path).trim();
     }
 
-    public static Map<String, String> getObjectMapper(String filePath) throws Exception{
-        ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.readValue(FileReader.readFixture(filePath), new TypeReference<Map<String,String>>(){});
+    public static Map<String, Object> getData(String filePath) throws Exception{
+        String fileFormat = filePath.substring(filePath.lastIndexOf("."));
+        return switch(fileFormat) {
+            case ".json" -> new ObjectMapper().readValue(FileReader.readFixture(filePath),
+                    new TypeReference<Map<String, Object>>() {});
+            case ".yaml" -> new Yaml().load(FileReader.readFixture(filePath));
+            default -> throw new IllegalStateException("Unexpected value: " + fileFormat);
+        };
+
     }
 }
