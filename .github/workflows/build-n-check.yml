@@ -33,7 +33,7 @@ jobs:
       - name: SonarQube Scan
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        
+        working-directory: ./app
         run: ./gradlew sonarqube \
-          -Dsonar.projectKey=my_project_key \
+          -Dsonar.projectKey=KirillSosnyuk_java-project-71 \
           -Dsonar.host.url=https://sonarcloud.io
