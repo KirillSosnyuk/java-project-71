@@ -8,8 +8,6 @@ import picocli.CommandLine.Parameters;
 
 
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.Callable;
 
 
@@ -46,9 +44,7 @@ public class App implements Callable {
     @Override
     public String call() {
         try {
-            Map<String, Object> firstFile = FileReader.getData(String.valueOf(filePath1));
-            Map<String, Object> secondFile = FileReader.getData(String.valueOf(filePath2));
-            var test = Differ.generate(firstFile, secondFile);
+            var test = Differ.generate(String.valueOf(filePath1), String.valueOf(filePath2));
             System.out.println(test);
             return test;
         } catch (Exception e) {

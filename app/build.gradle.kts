@@ -2,6 +2,16 @@ plugins {
     id("java")
     id("application")
     id("com.github.ben-manes.versions") version "0.47.0"
+    id("org.sonarqube") version "6.3.1.5724"
+    checkstyle
+    jacoco
+}
+
+sonar {
+    properties {
+        property("sonar.projectKey", "KirillSosnyuk_java-project-71")
+        property("sonar.organization", "kirillsosnyuk")
+    }
 }
 
 group = "hexlet.code"
@@ -22,6 +32,11 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test) // tests are required to run before generating the report
 }
 
 application {

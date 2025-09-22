@@ -19,11 +19,11 @@ public class FileReader {
         return Files.readString(path).trim();
     }
 
-    public static Map<String, Object> getData(String filePath) throws Exception{
+    public static Map<String, Object> getData(String filePath) throws Exception {
         String fileFormat = filePath.substring(filePath.lastIndexOf("."));
-        return switch(fileFormat) {
+        return switch (fileFormat) {
             case ".json" -> new ObjectMapper().readValue(FileReader.readFixture(filePath),
-                    new TypeReference<Map<String, Object>>() {});
+                    new TypeReference<Map<String, Object>>() { });
             case ".yaml" -> new Yaml().load(FileReader.readFixture(filePath));
             default -> throw new IllegalStateException("Unexpected value: " + fileFormat);
         };
