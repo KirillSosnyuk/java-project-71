@@ -19,13 +19,19 @@ public class Differ {
     }
 
     private static String parseValuePlain(Object value) {
-        return switch (value) {
-            case Boolean bField -> bField.toString();
-            case Number number -> number.toString();
-            case null -> "null";
-            case String strValue -> String.format("'%s'", strValue);
-            default -> "[complex value]";
-        };
+        if (value == null) {
+            return "null";
+        }
+        if (value instanceof Boolean b) {
+            return b.toString();
+        }
+        if (value instanceof Number n) {
+            return n.toString();
+        }
+        if (value instanceof String s) {
+            return String.format("'%s'", s);
+        }
+        return "[complex value]";
     }
 
     private static String createStylePlain(Map<Integer, ModeratedString> changes) {
