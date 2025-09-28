@@ -14,7 +14,7 @@ public class FileReader {
         return Paths.get(filePath).toAbsolutePath().normalize();
     }
 
-    private static String readFixture(String fileName) throws Exception {
+    static String readFixture(String fileName) throws Exception {
         var path = getFilePath(fileName);
         return Files.readString(path).trim();
     }

@@ -38,13 +38,15 @@ public class App implements Callable {
             defaultValue = "stylish",
             paramLabel = "format"
     )
-    private String format;
+    private String formatType;
 
 
     @Override
     public String call() {
         try {
-            var test = Differ.generate(String.valueOf(filePath1), String.valueOf(filePath2));
+            var test = Differ.generate(String.valueOf(filePath1),
+                    String.valueOf(filePath2),
+                   String.valueOf(formatType));
             System.out.println(test);
             return test;
         } catch (Exception e) {
