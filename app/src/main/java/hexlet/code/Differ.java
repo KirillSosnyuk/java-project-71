@@ -58,7 +58,7 @@ public class Differ {
 
             result.append(completedString);
         }
-        return result.toString();
+        return result.toString().trim();
     }
 
     private static String plainString(String key, String status) {

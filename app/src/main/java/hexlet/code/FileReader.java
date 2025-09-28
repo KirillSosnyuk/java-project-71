@@ -24,7 +24,7 @@ public class FileReader {
         return switch (fileFormat) {
             case ".json" -> new ObjectMapper().readValue(FileReader.readFixture(filePath),
                     new TypeReference<Map<String, Object>>() { });
-            case ".yaml" -> new Yaml().load(FileReader.readFixture(filePath));
+            case ".yaml", ".yml" -> new Yaml().load(FileReader.readFixture(filePath));
             default -> throw new IllegalStateException("Unexpected value: " + fileFormat);
         };
 
