@@ -42,3 +42,15 @@ tasks.jacocoTestReport {
 application {
     mainClass.set("hexlet.code.App")
 }
+
+tasks.withType<JavaCompile>().configureEach {
+    options.compilerArgs.add("--enable-preview")
+}
+
+tasks.withType<Test>().configureEach {
+    jvmArgs.add("--enable-preview")
+}
+
+tasks.withType<JavaExec>().configureEach {
+    jvmArgs.add("--enable-preview")
+}
