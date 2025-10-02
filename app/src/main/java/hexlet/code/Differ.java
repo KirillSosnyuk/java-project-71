@@ -4,6 +4,7 @@ package hexlet.code;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.model.ModeratedString;
+import hexlet.code.model.Status;
 
 import java.util.Map;
 import java.util.LinkedHashMap;
@@ -39,16 +40,16 @@ public class Differ {
         var currentChanges = changes.values();
         for (ModeratedString currentString: currentChanges) {
             var status = currentString.status();
-            if (status.equals("unchanged")) {
+            if (status.equals(Status.UNCHANGED)) {
                 continue;
             }
 
             var completedString = switch (status) {
-                case "added" -> plainString(currentString.key(), status)
+                case Status.ADDED -> plainString(currentString.key(), "added")
                         + " with value: "
                         + parseValuePlain(currentString.currentValue());
-                case "removed" -> plainString(currentString.key(), status);
-                case "updated" -> plainString(currentString.key(), status)
+                case Status.REMOVED -> plainString(currentString.key(), "removed");
+                case Status.UPDATED -> plainString(currentString.key(), "updated")
                         + ". From "
                         + parseValuePlain(currentString.previousValue())
                         + " to "
@@ -85,12 +86,11 @@ public class Differ {
         for (ModeratedString currentString: currentChanges) {
             var status = currentString.status();
             var completedString = switch (status) {
-                case "added" -> stylishString(currentString.key(), currentString.currentValue(), "+");
-                case "removed" -> stylishString(currentString.key(), currentString.previousValue(), "-");
-                case "updated" -> stylishString(currentString.key(), currentString.previousValue(), "-")
+                case Status.ADDED -> stylishString(currentString.key(), currentString.currentValue(), "+");
+                case Status.REMOVED -> stylishString(currentString.key(), currentString.previousValue(), "-");
+                case Status.UPDATED -> stylishString(currentString.key(), currentString.previousValue(), "-")
                         + stylishString(currentString.key(), currentString.currentValue(), "+");
-                case "unchanged" -> stylishString(currentString.key(), currentString.currentValue(), " ");
-                default -> throw new IllegalStateException("Unexpected value: " + status);
+                case Status.UNCHANGED -> stylishString(currentString.key(), currentString.currentValue(), " ");
             };
             result.append(completedString);
         }
@@ -110,13 +110,13 @@ public class Differ {
         };
     }
 
-    private static String moderateState(Map<String, Object> content1,
+    private static Status moderateState(Map<String, Object> content1,
                                           Map<String, Object> content2, String currentKey) {
 
-        return !content1.containsKey(currentKey) ? "added"
-                : !content2.containsKey(currentKey) ? "removed"
-                : !Objects.equals(content1.get(currentKey), content2.get(currentKey)) ? "updated"
-                : "unchanged";
+        return !content1.containsKey(currentKey) ? Status.ADDED // "added"
+                : !content2.containsKey(currentKey) ? Status.REMOVED // "removed"
+                : !Objects.equals(content1.get(currentKey), content2.get(currentKey)) ? Status.UPDATED // "updated"
+                : Status.UNCHANGED; // "unchanged"
 
 
     }
