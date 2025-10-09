@@ -40,7 +40,7 @@ public class Differ {
         var currentChanges = changes.values();
         for (ModeratedString currentString: currentChanges) {
             var status = currentString.status();
-            if (status.equals(Status.UNCHANGED)) {
+            if (status.equals(Status.UNTOUCHED)) {
                 continue;
             }
 
@@ -90,7 +90,7 @@ public class Differ {
                 case Status.REMOVED -> stylishString(currentString.key(), currentString.previousValue(), "-");
                 case Status.UPDATED -> stylishString(currentString.key(), currentString.previousValue(), "-")
                         + stylishString(currentString.key(), currentString.currentValue(), "+");
-                case Status.UNCHANGED -> stylishString(currentString.key(), currentString.currentValue(), " ");
+                case Status.UNTOUCHED -> stylishString(currentString.key(), currentString.currentValue(), " ");
             };
             result.append(completedString);
         }
@@ -116,7 +116,7 @@ public class Differ {
         return !content1.containsKey(currentKey) ? Status.ADDED // "added"
                 : !content2.containsKey(currentKey) ? Status.REMOVED // "removed"
                 : !Objects.equals(content1.get(currentKey), content2.get(currentKey)) ? Status.UPDATED // "updated"
-                : Status.UNCHANGED; // "unchanged"
+                : Status.UNTOUCHED; // "unchanged"
 
 
     }

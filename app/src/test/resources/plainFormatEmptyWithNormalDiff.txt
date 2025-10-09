@@ -1,0 +1,13 @@
+Property 'chars1' was added with value: [complex value]
+Property 'chars2' was added with value: false
+Property 'checked' was added with value: true
+Property 'default' was added with value: [complex value]
+Property 'id' was added with value: null
+Property 'key2' was added with value: 'value2'
+Property 'numbers1' was added with value: [complex value]
+Property 'numbers2' was added with value: [complex value]
+Property 'numbers4' was added with value: [complex value]
+Property 'obj1' was added with value: [complex value]
+Property 'setting1' was added with value: 'Another value'
+Property 'setting2' was added with value: 300
+Property 'setting3' was added with value: 'none'

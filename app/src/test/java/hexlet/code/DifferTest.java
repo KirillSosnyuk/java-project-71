@@ -1,99 +1,59 @@
 package hexlet.code;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DifferTest {
-
-    @Test
-    public void testGenerateDifferentFormats() throws Exception {
-        var expected = "{\n"
-                + "  - follow: false\n"
-                + "    host: hexlet.io\n"
-                + "  - proxy: 123.234.53.22\n"
-                + "  - timeout: 50\n"
-                + "  + timeout: 20\n"
-                + "  + verbose: true\n"
-                + "}";
-        var actual = Differ.generate("./src/test/resources/first.json", "./src/test/resources/second.yaml");
-        assertEquals(expected, actual);
+    private static Path getFixturePath(String fileName) {
+        return Paths
+                .get("src", "test", "resources", fileName)
+                .toAbsolutePath()
+                .normalize();
     }
 
-    @Test
-    public void testGenerateSameFile() throws Exception {
-        var expected = "{\n"
-                + "    host: hexlet.io\n"
-                + "    timeout: 20\n"
-                + "    verbose: true\n"
-                + "}";
-        var actual = Differ.generate("./src/test/resources/second.json", "./src/test/resources/second.json");
-        assertEquals(expected, actual);
+    private static String readFixture(String fileName) throws Exception {
+        var fixturePath = getFixturePath(fileName);
+        return Files.readString(fixturePath).trim();
     }
 
-    @Test
-    public void testGenerateOverwise() throws Exception {
-        var expected = "{\n"
-                + "  + follow: false\n"
-                + "    host: hexlet.io\n"
-                + "  + proxy: 123.234.53.22\n"
-                + "  - timeout: 20\n"
-                + "  + timeout: 50\n"
-                + "  - verbose: true\n"
-                + "}";
-        var actual = Differ.generate("./src/test/resources/second.json", "./src/test/resources/first.yaml");
-        assertEquals(expected, actual);
-    }
-    @Test
-    public void testPlainStyle() throws Exception {
-        var expected = "Property 'chars2' was updated. From [complex value] to false\n"
-                + "Property 'checked' was updated. From false to true\n"
-                + "Property 'default' was updated. From null to [complex value]\n"
-                + "Property 'id' was updated. From 45 to null\n"
-                + "Property 'key1' was removed\n"
-                + "Property 'key2' was added with value: 'value2'\n"
-                + "Property 'numbers2' was updated. From [complex value] to [complex value]\n"
-                + "Property 'numbers3' was removed\n"
-                + "Property 'numbers4' was added with value: [complex value]\n"
-                + "Property 'obj1' was added with value: [complex value]\n"
-                + "Property 'setting1' was updated. From 'Some value' to 'Another value'\n"
-                + "Property 'setting2' was updated. From 200 to 300\n"
-                + "Property 'setting3' was updated. From true to 'none'";
-        var actual = Differ.generate("./src/test/resources/file1.yaml",
-                "./src/test/resources/file2.json",
-                "plain");
-        assertEquals(expected, actual);
+    private static Stream<Arguments> filesForTest() {
+        return Stream.of(
+                Arguments.of("file1.json", "file2.json", "normalDiff.txt", "stylish"),
+                Arguments.of("file1.json", "file2.json", "plainFormatNormalDiff.txt", "plain"),
+                Arguments.of("file1.json", "file2.json", "jsonFormatNormalDiff.json", "json"),
+                Arguments.of("empty.json", "file2.json", "emptyWithNormalDiff.txt", "stylish"),
+                Arguments.of("empty.json", "file2.json", "plainFormatEmptyWithNormalDiff.txt", "plain"),
+                Arguments.of("empty.json", "file2.json", "jsonFormatEmptyWithNormalDiff.json", "json"),
+                Arguments.of("file1.json", "empty.json", "normalWithEmptyDiff.txt", "stylish"),
+                Arguments.of("file1.json", "empty.json", "plainFormatNormalWithEmptyDiff.txt", "plain"),
+                Arguments.of("empty.json", "empty.json", "emptyDiff.txt", "stylish"),
+                Arguments.of("empty.json", "empty.json", "plainFormatEmptyDiff.txt", "plain"),
+
+                Arguments.of("file1.yaml", "file2.yml", "normalDiff.txt", "stylish"),
+                Arguments.of("file1.yaml", "file2.yml", "plainFormatNormalDiff.txt", "plain"),
+                Arguments.of("file1.yaml", "file2.yml", "jsonFormatNormalDiff.json", "json")
+        );
     }
 
-    @Test
-    public void testJsonStyle() throws Exception {
+    @ParameterizedTest(name = "Generate method test {index} -f {3} - for {0} and {1}, expected {2}")
+    @MethodSource("filesForTest")
+    void generateTest(String fileName1, String fileName2, String diffFileName, String format)
+            throws Exception {
+        var expected = readFixture(diffFileName);
+        var path1 = getFixturePath(fileName1).toString();
+        var path2 = getFixturePath(fileName2).toString();
 
-        var expected = "[{\"key\":\"chars1\",\"previousValue\":[\"a\",\"b\",\"c\"],"
-                + "\"currentValue\":[\"a\",\"b\",\"c\"],"
-                + "\"status\":\"unchanged\"},"
-                + "{\"key\":\"chars2\",\"previousValue\":[\"d\",\"e\",\"f\"],"
-                + "\"currentValue\":false,\"status\":\"updated\"},{\"key\":\"checked\","
-                + "\"previousValue\":false,\"currentValue\":true,\"status\":\"updated\"},"
-                + "{\"key\":\"default\",\"previousValue\":null,\"currentValue\":[\"value1\",\"value2\"],"
-                + "\"status\":\"updated\"},{\"key\":\"id\",\"previousValue\":45,\"currentValue\":null,"
-                + "\"status\":\"updated\"},{\"key\":\"key1\",\"previousValue\":\"value1\",\"currentValue\":null,"
-                + "\"status\":\"removed\"},{\"key\":\"key2\",\"previousValue\":null,\"currentValue\":\"value2\","
-                + "\"status\":\"added\"},{\"key\":\"numbers1\",\"previousValue\":[1,2,3,4],\"currentValue\":[1,2,3,4],"
-                + "\"status\":\"unchanged\"},{\"key\":\"numbers2\",\"previousValue\":[2,3,4,5],"
-                + "\"currentValue\":[22,33,44,55],"
-                + "\"status\":\"updated\"},{\"key\":\"numbers3\",\"previousValue\":[3,4,5],\"currentValue\":null,"
-                + "\"status\":\"removed\"},{\"key\":\"numbers4\",\"previousValue\":null,\"currentValue\":[4,5,6],"
-                + "\"status\":\"added\"},{\"key\":\"obj1\","
-                + "\"previousValue\":null,\"currentValue\":{\"nestedKey\":\"value\","
-                + "\"isNested\":true},\"status\":\"added\"},{\"key\":\"setting1\",\"previousValue\":\"Some value\","
-                + "\"currentValue\":\"Another value\",\"status\":\"updated\"},{\"key\":\"setting2\","
-                + "\"previousValue\":200,\"currentValue\":300,\"status\":\"updated\"},{\"key\":\"setting3\","
-                + "\"previousValue\":true,\"currentValue\":\"none\",\"status\":\"updated\"}]";
-        var actual = Differ.generate("./src/test/resources/file1.yaml",
-                "./src/test/resources/file2.json",
-                "json");
+        var actual = Differ.generate(path1, path2, format);
+
         assertEquals(expected, actual);
     }
-
 }
