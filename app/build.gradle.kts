@@ -6,10 +6,31 @@ plugins {
     jacoco
 }
 
+jacoco {
+    toolVersion = "0.8.12"
+}
+
 sonar {
     properties {
         property("sonar.projectKey", "KirillSosnyuk_java-project-71")
         property("sonar.organization", "kirillsosnyuk")
+        property("sonar.token", System.getenv("SONAR_SECRET"))
+        property(
+            "sonar.coverage.jacoco.xmlReportPaths",
+            layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml")
+                .get()
+                .asFile
+                .absolutePath
+        )
+
+        // JUnit XML report
+        property(
+            "sonar.junit.reportPaths",
+            layout.buildDirectory.dir("test-results/test")
+                .get()
+                .asFile
+                .absolutePath
+        )
     }
 }
 
@@ -30,10 +51,20 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+    reports {
+        junitXml.required.set(true)
+        junitXml.outputLocation.set(layout.buildDirectory.dir("test-results/test"))
+        html.required.set(true)
+    }
 }
 
 tasks.jacocoTestReport {
-    reports { xml.required.set(true) }
+    dependsOn(tasks.test)
+    reports {
+        xml.required.set(true)
+        xml.outputLocation.set(file("$buildDir/reports/jacoco/test/jacocoTestReport.xml"))
+        html.required.set(true)
+    }
 }
 
 application {

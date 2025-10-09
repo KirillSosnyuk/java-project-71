@@ -7,16 +7,18 @@ import hexlet.code.model.ModeratedString;
 import hexlet.code.model.Status;
 
 import java.util.Map;
-import java.util.LinkedHashMap;
-import java.util.Objects;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.HashSet;
+import java.util.Objects;
 
 public class Differ {
 
-    private static String createStyleJson(Map<Integer, ModeratedString> changes) throws JsonProcessingException {
+    private static String createStyleJson(List<ModeratedString> changes) throws JsonProcessingException {
         var objectMapper = new ObjectMapper();
-        return objectMapper.writeValueAsString(changes.values());
+        return objectMapper.writeValueAsString(changes);
     }
 
     private static String parseValuePlain(Object value) {
@@ -35,10 +37,9 @@ public class Differ {
         return "[complex value]";
     }
 
-    private static String createStylePlain(Map<Integer, ModeratedString> changes) {
+    private static String createStylePlain(List<ModeratedString> changes) {
         StringBuilder result = new StringBuilder();
-        var currentChanges = changes.values();
-        for (ModeratedString currentString: currentChanges) {
+        for (ModeratedString currentString: changes) {
             var status = currentString.status();
             if (status.equals(Status.UNTOUCHED)) {
                 continue;
@@ -80,10 +81,9 @@ public class Differ {
                 + "\n";
     }
 
-    private static String createStyleStylish(Map<Integer, ModeratedString> changes) {
+    private static String createStyleStylish(List<ModeratedString> changes) {
         StringBuilder result = new StringBuilder("{\n");
-        var currentChanges = changes.values();
-        for (ModeratedString currentString: currentChanges) {
+        for (ModeratedString currentString: changes) {
             var status = currentString.status();
             var completedString = switch (status) {
                 case Status.ADDED -> stylishString(currentString.key(), currentString.currentValue(), "+");
@@ -98,7 +98,7 @@ public class Differ {
         return result.toString();
 
     }
-    private static String createStyle(Map<Integer, ModeratedString> changes,
+    private static String createStyle(List<ModeratedString> changes,
                                       String format) throws JsonProcessingException {
         return switch (format) {
             case "stylish" -> createStyleStylish(changes);
@@ -113,10 +113,10 @@ public class Differ {
     private static Status moderateState(Map<String, Object> content1,
                                           Map<String, Object> content2, String currentKey) {
 
-        return !content1.containsKey(currentKey) ? Status.ADDED // "added"
-                : !content2.containsKey(currentKey) ? Status.REMOVED // "removed"
-                : !Objects.equals(content1.get(currentKey), content2.get(currentKey)) ? Status.UPDATED // "updated"
-                : Status.UNTOUCHED; // "unchanged"
+        return !content1.containsKey(currentKey) ? Status.ADDED
+                : !content2.containsKey(currentKey) ? Status.REMOVED
+                : !Objects.equals(content1.get(currentKey), content2.get(currentKey)) ? Status.UPDATED
+                : Status.UNTOUCHED;
 
 
     }
@@ -130,14 +130,16 @@ public class Differ {
         Map<String, Object> firstFileContent = FileReader.getData(String.valueOf(firstFilePath));
         Map<String, Object> secondFileContent = FileReader.getData(String.valueOf(secondFilePath));
 
-        Set<String> generalKeys = new TreeSet<>();
+        Set<String> generalKeys = new HashSet<>();
         generalKeys.addAll(firstFileContent.keySet());
         generalKeys.addAll(secondFileContent.keySet());
 
-        Map<Integer, ModeratedString> changes = new LinkedHashMap<>();
-        int counter = 0;
-        for (String key: generalKeys) {
-            changes.put(counter++, new ModeratedString(key,
+        Set<String> sortedKeys = new TreeSet<>(generalKeys);
+
+        List<ModeratedString> changes = new ArrayList<>();
+
+        for (String key: sortedKeys) {
+            changes.add(new ModeratedString(key,
                     firstFileContent.getOrDefault(key, null),
                     secondFileContent.getOrDefault(key, null),
                     moderateState(firstFileContent, secondFileContent, key)));
