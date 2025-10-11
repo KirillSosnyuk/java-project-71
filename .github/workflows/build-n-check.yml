@@ -3,7 +3,6 @@ name: build-n-check
 on:
   push:
     branches: [ main ]
-  pull_request:
 
 jobs:
   build:
@@ -18,18 +17,18 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - name: Run Build
+      - name: Run Build And Test
         working-directory: ./app
         run: ./gradlew build
 
       - name: Run Checkstyle
         working-directory: ./app
         run: ./gradlew checkstyleMain checkstyleTest
-
-      - name: Run tests
+      
+      - name: Jacoco Test Report
         working-directory: ./app
-        run: ./gradlew test
-
+        run: ./gradlew jacocoTestReport
+        
       - name: Cache SonarQube packages
         uses: actions/cache@v4
         with:
@@ -46,4 +45,5 @@ jobs:
         working-directory: ./app
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew build sonar --info
+
+        run: ./gradlew sonar --info
