@@ -14,7 +14,6 @@ sonar {
     properties {
         property("sonar.projectKey", "KirillSosnyuk_java-project-71")
         property("sonar.organization", "kirillsosnyuk")
-        property("sonar.token", System.getenv("SONAR_SECRET"))
         property(
             "sonar.coverage.jacoco.xmlReportPaths",
             layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml")
