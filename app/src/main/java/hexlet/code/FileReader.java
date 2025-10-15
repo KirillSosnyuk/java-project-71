@@ -27,6 +27,6 @@ public class FileReader {
             case ".yaml", ".yml" -> new Yaml().load(FileReader.readFixture(filePath));
             default -> throw new IllegalStateException("Unexpected value: " + fileFormat);
         };
-
     }
+
 }
