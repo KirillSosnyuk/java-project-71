@@ -6,7 +6,7 @@ import hexlet.code.model.Status;
 import java.util.List;
 import java.util.Objects;
 
-public class StylishFormat {
+public class StylishFormat implements Formattable {
     public static String stylishString(String key, Object value, String sign) {
         return "  "
                 + sign
@@ -17,7 +17,7 @@ public class StylishFormat {
                 + "\n";
     }
 
-    public static String createStyleStylish(List<ModeratedString> changes) {
+    public String format(List<ModeratedString> changes) {
         StringBuilder result = new StringBuilder("{\n");
         for (ModeratedString currentString: changes) {
             var status = currentString.status();

@@ -1,5 +1,7 @@
 package hexlet.code;
 
+
+import hexlet.code.formatter.Formattable;
 import hexlet.code.formatter.Formatter;
 import hexlet.code.model.ModeratedString;
 import hexlet.code.model.Status;
@@ -46,7 +48,8 @@ public class Differ {
 
         changes.sort(Comparator.comparing(ModeratedString::key));
 
-        return Formatter.createStyle(changes, format);
+        Formattable formatter = Formatter.create(format);
+        return formatter.format(changes);
     }
 
 }

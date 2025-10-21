@@ -5,7 +5,7 @@ import hexlet.code.model.Status;
 
 import java.util.List;
 
-public class PlainFormat {
+public class PlainFormat implements Formattable {
     public static String parseValuePlain(Object value) {
         if (value == null) {
             return "null";
@@ -22,7 +22,7 @@ public class PlainFormat {
         return "[complex value]";
     }
 
-    public static String createStylePlain(List<ModeratedString> changes) {
+    public String format(List<ModeratedString> changes) {
         StringBuilder result = new StringBuilder();
         for (ModeratedString currentString: changes) {
             var status = currentString.status();
