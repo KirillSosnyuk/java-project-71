@@ -5,7 +5,7 @@ import hexlet.code.model.Status;
 
 import java.util.List;
 
-public class PlainFormat implements Formattable {
+final public class PlainFormat implements Formattable {
     public static String parseValuePlain(Object value) {
         if (value == null) {
             return "null";

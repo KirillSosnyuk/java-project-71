@@ -6,7 +6,7 @@ import hexlet.code.model.Status;
 import java.util.List;
 import java.util.Objects;
 
-public class StylishFormat implements Formattable {
+final public class StylishFormat implements Formattable {
     public static String stylishString(String key, Object value, String sign) {
         return "  "
                 + sign
