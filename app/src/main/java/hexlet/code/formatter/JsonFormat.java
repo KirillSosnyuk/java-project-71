@@ -6,7 +6,7 @@ import hexlet.code.model.ModeratedString;
 
 import java.util.List;
 
-final public class JsonFormat implements Formattable {
+final class JsonFormat implements Formattable {
     public String format(List<ModeratedString> changes) throws JsonProcessingException {
         var objectMapper = new ObjectMapper();
         return objectMapper.writeValueAsString(changes);
